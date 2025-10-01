@@ -1,0 +1,412 @@
+# ===========================================
+# Spring Boot & Java .gitignore
+# ===========================================
+
+# Compiled class files
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# Package Files
+*.tar.gz
+*.rar
+*.zip
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle
+**/build/
+!src/**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+.gradletasknamecache
+
+# STS (Spring Tool Suite)
+.apt_generated
+.classpath
+.factorypath
+.project
+.Settings
+.springBeans
+.sts4-cache
+
+# IntelliJ IDEA
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# ===========================================
+# Database & Security Sensitive Files
+# ===========================================
+
+# Environment files with credentials
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# MySQL configuration files with passwords
+data/mysql/my.cnf
+**/*.cnf
+!**/*.cnf.example
+
+# Database dumps and backups
+*.sql.gz
+*.sql.zip
+*.dump
+*.backup
+database_backup_*
+data/backups/
+data/exports/
+
+# H2 Database files
+*.h2.db
+*.h2.mv.db
+*.h2.trace.db
+h2/
+
+# SQLite
+*.sqlite
+*.sqlite3
+*.db
+
+# ===========================================
+# Logs and Temporary Files
+# ===========================================
+
+# Log files
+*.log
+logs/
+spring.log
+application.log
+error.log
+debug.log
+catalina.out
+
+# Temporary files
+*.temp
+*.tmp
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===========================================
+# Application Specific
+# ===========================================
+
+# Spring Boot
+spring-boot-*.log
+nohup.out
+
+# Application properties with sensitive data
+application-local.properties
+application-prod.properties
+application-production.properties
+*-local.properties
+*-prod.properties
+
+# SSL certificates and keys
+*.p12
+*.jks
+*.keystore
+*.truststore
+*.pem
+*.key
+*.crt
+*.cer
+ssl/
+certificates/
+
+# Cache directories
+.cache/
+cache/
+
+# ===========================================
+# Development and Build Tools
+# ===========================================
+
+# Node.js (if using for frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+Dockerfile.local
+
+# Kubernetes
+*.yaml.local
+*.yml.local
+k8s-local/
+
+# JRebel
+rebel.xml
+
+# JProfiler
+*.jprofiler
+
+# ===========================================
+# OS Generated Files
+# ===========================================
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ===========================================
+# Backup and Archive Files
+# ===========================================
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*.save
+*~
+
+# Archive files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# ===========================================
+# JetBrains IDEs
+# ===========================================
+
+# User-specific stuff
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# AWS User-specific
+.idea/**/aws.xml
+
+# Generated files
+.idea/**/contentModel.xml
+
+# Sensitive or high-churn files
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+
+# ===========================================
+# Testing
+# ===========================================
+
+# Test results
+TEST-*.xml
+target/surefire-reports/
+target/failsafe-reports/
+test-output/
+.allure/
+allure-results/
+
+# Coverage reports
+*.exec
+.jacoco/
+target/site/jacoco/
+
+# ===========================================
+# Deployment and CI/CD
+# ===========================================
+
+# Deployment scripts with credentials
+deploy.sh
+deploy-prod.sh
+*-deploy.sh
+
+# CI/CD secrets
+.secrets/
+secrets/
+.github/secrets/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.tfvars
+
+# Ansible
+*.retry
+vault-password.txt
+
+# ===========================================
+# Custom Application Files
+# ===========================================
+
+# Custom data files
+data/uploads/
+data/temp/
+data/cache/
+uploads/
+temp/
+
+# Configuration overrides
+config/local/
+config/override/
+
+# Scripts with embedded credentials
+*-with-password.sh
+*-credentials.sh
+
+# Custom logs
+app-*.log
+application-*.log
+
+# Development databases
+dev.db
+development.db
+local.db
+
+# ===========================================
+# Documentation Build Artifacts
+# ===========================================
+
+# Generated documentation
+docs/build/
+site/
+_site/
+
+# ===========================================
+# Miscellaneous
+# ===========================================
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# VS Code workspace settings
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.vscode/tasks.json
+
+# Local configuration overrides
+local/
+local-*/
+dev-local/
+
+# Generated API documentation
+api-docs/
+swagger-ui/
+
+# Performance monitoring
+*.hprof
+*.heap
+profiler/
+
+# Local environment setup
+setup-local.sh
+env-local.sh

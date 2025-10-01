@@ -173,6 +173,29 @@ SPRING_PROFILES_ACTIVE=test ./mvnw spring-boot:run
 java -jar target/spring-data-jpa-0.0.1-SNAPSHOT.jar --spring.config.location=classpath:/application.properties,/etc/myapp/application.properties
 ```
 
+## 📚 API Documentation
+
+This project includes comprehensive REST API documentation powered by **Swagger/OpenAPI 3**:
+
+### 🌐 Interactive Documentation
+- **Swagger UI**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+- **OpenAPI JSON**: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+- **OpenAPI YAML**: [http://localhost:8080/v3/api-docs.yaml](http://localhost:8080/v3/api-docs.yaml)
+
+### 🎯 API Endpoints
+- **Students API**: `/api/students` - Student management operations
+- **Courses API**: `/api/courses` - Course management and search
+- **Departments API**: `/api/departments` - Department CRUD and statistics  
+- **Enrollments API**: `/api/enrollments` - Student enrollment management
+
+### ✨ Features
+- **Interactive Testing**: Test endpoints directly from the browser
+- **Comprehensive Documentation**: Detailed parameter descriptions and examples
+- **Schema Validation**: Request/response model documentation
+- **Error Handling**: HTTP status codes and error response formats
+
+> 📖 For detailed implementation information, see [SWAGGER_IMPLEMENTATION.md](SWAGGER_IMPLEMENTATION.md)
+
 ## 🤝 Contributing
 
 1. Fork the repository

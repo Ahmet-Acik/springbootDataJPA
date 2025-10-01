@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
                 name = "email",
                 column = @Column(name = "guardianEmail")
         ), @AttributeOverride(
-        name = "mobil",
+        name = "mobile",
         column = @Column(name = "guardianMobileNumber")
 )}
 )

@@ -18,12 +18,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/students")
 @RequiredArgsConstructor
-@Tag(name = "Student Management", description = "APIs for managing students in the educational system")
+@Tag(name = "Student Management", description = "Comprehensive APIs for managing students in the educational system")
 public class StudentControllerSimple {
 
     private final StudentService studentService;
@@ -41,9 +45,13 @@ public class StudentControllerSimple {
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
     @PostMapping
-    public ResponseEntity<Student> createStudent(@RequestBody Student student) {
-        Student createdStudent = studentService.createStudent(student);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdStudent);
+    public ResponseEntity<Student> createStudent(@Valid @RequestBody Student student) {
+        try {
+            Student createdStudent = studentService.createStudent(student);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdStudent);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @Operation(summary = "Get student by ID", description = "Retrieves a student by their ID")
@@ -100,10 +108,151 @@ public class StudentControllerSimple {
         }
     }
 
-    @Operation(summary = "Get student statistics", description = "Get basic statistics about students")
+    @Operation(summary = "Search students", description = "Search students by various criteria")
+    @GetMapping("/search")
+    public ResponseEntity<List<Student>> searchStudents(
+            @Parameter(description = "First name", example = "John")
+            @RequestParam(required = false) String firstName,
+            @Parameter(description = "Last name", example = "Doe")
+            @RequestParam(required = false) String lastName,
+            @Parameter(description = "Email address", example = "john@example.com")
+            @RequestParam(required = false) String email,
+            @Parameter(description = "Student status", example = "ACTIVE")
+            @RequestParam(required = false) String status,
+            @Parameter(description = "Minimum GPA", example = "3.0")
+            @RequestParam(required = false) BigDecimal minGpa,
+            @Parameter(description = "Maximum GPA", example = "4.0")
+            @RequestParam(required = false) BigDecimal maxGpa) {
+        
+        Student.StudentStatus studentStatus = null;
+        if (status != null) {
+            try {
+                studentStatus = Student.StudentStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        
+        List<Student> students = studentService.searchStudents(firstName, lastName, email, studentStatus, minGpa, maxGpa);
+        return ResponseEntity.ok(students);
+    }
+
+    @Operation(summary = "Get comprehensive student statistics", description = "Get detailed statistics about students")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Statistics retrieved successfully",
+                    content = @Content(mediaType = "application/json"))
+    })
     @GetMapping("/stats")
-    public ResponseEntity<String> getStudentStats() {
-        long totalStudents = studentService.getAllStudents().size();
-        return ResponseEntity.ok("Total students: " + totalStudents);
+    public ResponseEntity<Map<String, Object>> getStudentStats() {
+        Map<String, Object> stats = new HashMap<>();
+        
+        List<Student> allStudents = studentService.getAllStudents();
+        stats.put("totalStudents", allStudents.size());
+        
+        long activeStudents = allStudents.stream()
+                .filter(s -> s.getIsActive() != null && s.getIsActive())
+                .count();
+        stats.put("activeStudents", activeStudents);
+        
+        long inactiveStudents = allStudents.size() - activeStudents;
+        stats.put("inactiveStudents", inactiveStudents);
+        
+        // Add enrollment statistics
+        var enrollmentStats = studentService.getStudentEnrollmentStatistics();
+        stats.put("enrollmentStatistics", enrollmentStats);
+        
+        return ResponseEntity.ok(stats);
+    }
+
+    @Operation(summary = "Create multiple students", description = "Create multiple students in a batch operation")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Students created successfully",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Invalid input data")
+    })
+    @PostMapping("/batch")
+    public ResponseEntity<List<Student>> createStudentsBatch(@Valid @RequestBody List<Student> students) {
+        try {
+            List<Student> createdStudents = studentService.createStudentsBatch(students);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdStudents);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Operation(summary = "Enroll student in course", description = "Enroll a student in a specific course")
+    @PostMapping("/{studentId}/enroll")
+    public ResponseEntity<String> enrollStudentInCourse(
+            @Parameter(description = "Student ID", required = true, example = "1")
+            @PathVariable Long studentId,
+            @Parameter(description = "Course ID", required = true, example = "1")
+            @RequestParam Long courseId,
+            @Parameter(description = "Semester", required = true, example = "Fall 2024")
+            @RequestParam String semester,
+            @Parameter(description = "Academic Year", required = true, example = "2024")
+            @RequestParam Integer academicYear) {
+        try {
+            studentService.enrollStudentInCourse(studentId, courseId, semester, academicYear);
+            return ResponseEntity.ok("Student enrolled successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Enrollment failed: " + e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Enroll student in multiple courses", description = "Enroll a student in multiple courses at once")
+    @PostMapping("/{studentId}/enroll-multiple")
+    public ResponseEntity<String> enrollStudentInMultipleCourses(
+            @Parameter(description = "Student ID", required = true, example = "1")
+            @PathVariable Long studentId,
+            @RequestBody List<Long> courseIds,
+            @Parameter(description = "Semester", required = true, example = "Fall 2024")
+            @RequestParam String semester,
+            @Parameter(description = "Academic Year", required = true, example = "2024")
+            @RequestParam Integer academicYear) {
+        try {
+            studentService.enrollStudentInMultipleCourses(studentId, courseIds, semester, academicYear);
+            return ResponseEntity.ok("Student enrolled in " + courseIds.size() + " courses successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Enrollment failed: " + e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Update grade and recalculate GPA", description = "Updates a grade for a specific enrollment and recalculates student's GPA")
+    @PutMapping("/enrollment/{enrollmentId}/grade")
+    public ResponseEntity<String> updateGradeAndCalculateGPA(
+            @Parameter(description = "Enrollment ID", required = true, example = "1")
+            @PathVariable Long enrollmentId,
+            @Parameter(description = "Grade", required = true, example = "A")
+            @RequestParam String grade,
+            @Parameter(description = "Grade Points", required = true, example = "4.0")
+            @RequestParam BigDecimal gradePoints) {
+        try {
+            studentService.updateGradeAndCalculateGPA(enrollmentId, grade, gradePoints);
+            return ResponseEntity.ok("Grade updated and GPA recalculated successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Grade update failed: " + e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Get student enrollment statistics", description = "Get statistics about student enrollments")
+    @GetMapping("/enrollment-stats")
+    public ResponseEntity<List<?>> getStudentEnrollmentStatistics() {
+        var enrollmentStats = studentService.getStudentEnrollmentStatistics();
+        return ResponseEntity.ok(enrollmentStats);
+    }
+
+    @Operation(summary = "Perform bulk grade update", description = "Update grades for all students in a specific semester")
+    @PutMapping("/bulk-grade-update")
+    public ResponseEntity<String> performBulkGradeUpdate(
+            @Parameter(description = "Semester", required = true, example = "Fall 2024")
+            @RequestParam String semester,
+            @Parameter(description = "Academic Year", required = true, example = "2024")
+            @RequestParam Integer academicYear) {
+        try {
+            studentService.performBulkGradeUpdate(semester, academicYear);
+            return ResponseEntity.ok("Bulk grade update completed successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Bulk grade update failed: " + e.getMessage());
+        }
     }
 }

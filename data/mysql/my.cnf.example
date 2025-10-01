@@ -1,0 +1,34 @@
+# MySQL Client Configuration File Template
+# 
+# ⚠️  SECURITY WARNING: This is a template file with placeholder values
+# ⚠️  NEVER put real passwords in this file - it's tracked by git!
+# 
+# Usage:
+#   1. Copy this file: cp data/mysql/my.cnf.example data/mysql/my.cnf
+#   2. Edit data/mysql/my.cnf with your REAL credentials  
+#   3. The my.cnf file is in .gitignore and won't be committed
+
+[client]
+host=localhost
+port=3306
+user=root
+password=your_mysql_password_here
+
+[mysql]
+host=localhost
+port=3306
+user=root
+password=your_mysql_password_here
+
+# Optional: Configure other MySQL tools
+[mysqldump]
+host=localhost
+port=3306
+user=root
+password=your_mysql_password_here
+
+[mysqladmin]
+host=localhost
+port=3306
+user=root
+password=your_mysql_password_here

@@ -7,11 +7,12 @@ echo "==================================="
 echo "School Management System DB Setup"
 echo "==================================="
 
-# Configuration
-DB_NAME="schooldb"
-DB_USER="root"
-DB_HOST="localhost"
-DB_PORT="3306"
+# Configuration - Can be overridden by environment variables
+DB_NAME="${DB_NAME:-schooldb}"
+DB_USER="${DB_USER:-root}"
+DB_HOST="${DB_HOST:-localhost}"
+DB_PORT="${DB_PORT:-3306}"
+DB_PASSWORD="${DB_PASSWORD:-}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -39,11 +40,42 @@ if ! command -v mysql &> /dev/null; then
     exit 1
 fi
 
+# Handle password - either from environment variable or prompt
+if [ -z "$DB_PASSWORD" ]; then
+    echo 
+    echo -n "Please enter MySQL password for user '$DB_USER': "
+    read -s DB_PASSWORD
+    echo
+else
+    print_status "Using password from environment variable"
+fi
+
+# Create temporary MySQL configuration file
+MYSQL_CONFIG_FILE=$(mktemp)
+cat << EOF > "$MYSQL_CONFIG_FILE"
+[client]
+host=$DB_HOST
+port=$DB_PORT
+user=$DB_USER
+password=$DB_PASSWORD
+EOF
+
+# Function to cleanup temporary files
+cleanup() {
+    if [ -f "$MYSQL_CONFIG_FILE" ]; then
+        rm -f "$MYSQL_CONFIG_FILE"
+    fi
+}
+
+# Set trap to cleanup on exit
+trap cleanup EXIT
+
 # Test MySQL connection
 print_status "Testing MySQL connection..."
-if ! mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p -e "SELECT 1;" &> /dev/null; then
+if ! mysql --defaults-extra-file="$MYSQL_CONFIG_FILE" -e "SELECT 1;" &> /dev/null; then
     print_error "Cannot connect to MySQL. Please check your connection settings."
     print_warning "Make sure MySQL is running and credentials are correct."
+    cleanup
     exit 1
 fi
 
@@ -52,17 +84,15 @@ print_status "MySQL connection successful!"
 # Create database and run initialization scripts
 print_status "Creating database and running initialization scripts..."
 
-echo 
-echo "Please enter MySQL password for user '$DB_USER':"
-
 # Run all SQL scripts in order
 for sql_file in data/sql/*.sql; do
     if [ -f "$sql_file" ]; then
         print_status "Executing $(basename $sql_file)..."
-        if mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p < "$sql_file"; then
+        if mysql --defaults-extra-file="$MYSQL_CONFIG_FILE" < "$sql_file"; then
             print_status "✓ $(basename $sql_file) executed successfully"
         else
             print_error "✗ Failed to execute $(basename $sql_file)"
+            cleanup
             exit 1
         fi
     fi

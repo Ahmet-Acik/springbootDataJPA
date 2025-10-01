@@ -1,0 +1,6 @@
+com/example/springdatajpa/entity/Student$StudentBuilder.class
+com/example/springdatajpa/entity/Guardian.class
+com/example/springdatajpa/entity/Student.class
+com/example/springdatajpa/entity/Guardian$GuardianBuilder.class
+com/example/springdatajpa/SpringDataJpaApplication.class
+com/example/springdatajpa/repository/StudentRepository.class

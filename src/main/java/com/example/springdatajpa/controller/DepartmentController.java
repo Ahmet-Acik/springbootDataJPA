@@ -59,30 +59,20 @@ public class DepartmentController {
         return ResponseEntity.ok(departments);
     }
 
-    @Operation(summary = "Get active departments", description = "Retrieves all active departments")
-    @GetMapping("/active")
-    public ResponseEntity<List<Department>> getActiveDepartments() {
-        List<Department> activeDepartments = departmentService.getActiveDepartments();
-        return ResponseEntity.ok(activeDepartments);
-    }
-
-    @Operation(summary = "Get department by name", description = "Finds a department by its name")
-    @GetMapping("/name/{name}")
-    public ResponseEntity<Department> getDepartmentByName(
-            @Parameter(description = "Department name", required = true, example = "Computer Science")
-            @PathVariable String name) {
-        return departmentService.getDepartmentByName(name)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @Operation(summary = "Search departments", description = "Search departments by name pattern")
+    @Operation(summary = "Search departments", description = "Search departments by keyword")
     @GetMapping("/search")
     public ResponseEntity<List<Department>> searchDepartments(
-            @Parameter(description = "Search term", required = true, example = "Computer")
-            @RequestParam String searchTerm) {
-        List<Department> departments = departmentService.searchDepartmentsByName(searchTerm);
+            @Parameter(description = "Search keyword", required = true, example = "Computer")
+            @RequestParam String keyword) {
+        List<Department> departments = departmentService.searchDepartments(keyword);
         return ResponseEntity.ok(departments);
+    }
+
+    @Operation(summary = "Get department summaries", description = "Get summary information for all departments")
+    @GetMapping("/summaries")
+    public ResponseEntity<List<?>> getDepartmentSummaries() {
+        var summaries = departmentService.getDepartmentSummaries();
+        return ResponseEntity.ok(summaries);
     }
 
     @Operation(summary = "Update department", description = "Updates an existing department")

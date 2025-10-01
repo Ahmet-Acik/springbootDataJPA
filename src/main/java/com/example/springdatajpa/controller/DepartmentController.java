@@ -14,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/departments")
@@ -75,6 +77,14 @@ public class DepartmentController {
         return ResponseEntity.ok(summaries);
     }
 
+    @Operation(summary = "Get department statistics", description = "Get statistical information about departments")
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Object>> getDepartmentStats() {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalDepartments", departmentService.getAllDepartments().size());
+        return ResponseEntity.ok(stats);
+    }
+
     @Operation(summary = "Update department", description = "Updates an existing department")
     @PutMapping("/{id}")
     public ResponseEntity<Department> updateDepartment(
@@ -99,12 +109,10 @@ public class DepartmentController {
         }
     }
 
-    @Operation(summary = "Get department statistics", description = "Get basic statistics about departments")
-    @GetMapping("/stats")
-    public ResponseEntity<String> getDepartmentStats() {
-        long totalDepartments = departmentService.getAllDepartments().size();
-        long activeDepartments = departmentService.getActiveDepartments().size();
-        return ResponseEntity.ok(String.format("Total departments: %d, Active departments: %d", 
-                totalDepartments, activeDepartments));
+    @Operation(summary = "Get active departments", description = "Get all active departments")
+    @GetMapping("/active")
+    public ResponseEntity<List<Department>> getActiveDepartments() {
+        List<Department> activeDepartments = departmentService.getActiveDepartmentsNonTransactional();
+        return ResponseEntity.ok(activeDepartments);
     }
 }

@@ -28,7 +28,7 @@ import java.util.Map;
 @RequestMapping("/api/students")
 @RequiredArgsConstructor
 @Tag(name = "Student Management", description = "Comprehensive APIs for managing students in the educational system")
-public class StudentControllerSimple {
+public class StudentController {
 
     private final StudentService studentService;
 

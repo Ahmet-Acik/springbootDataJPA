@@ -171,7 +171,7 @@ public class StudentController {
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
     @PostMapping("/batch")
-    public ResponseEntity<List<Student>> createStudentsBatch(@Valid @RequestBody List<Student> students) {
+    public ResponseEntity<List<Student>> createStudentsBatch(@RequestBody List<Student> students) {
         try {
             List<Student> createdStudents = studentService.createStudentsBatch(students);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdStudents);
@@ -182,7 +182,7 @@ public class StudentController {
 
     @Operation(summary = "Enroll student in course", description = "Enroll a student in a specific course")
     @PostMapping("/{studentId}/enroll")
-    public ResponseEntity<String> enrollStudentInCourse(
+    public ResponseEntity<Map<String, Object>> enrollStudentInCourse(
             @Parameter(description = "Student ID", required = true, example = "1")
             @PathVariable Long studentId,
             @Parameter(description = "Course ID", required = true, example = "1")
@@ -193,9 +193,23 @@ public class StudentController {
             @RequestParam Integer academicYear) {
         try {
             studentService.enrollStudentInCourse(studentId, courseId, semester, academicYear);
-            return ResponseEntity.ok("Student enrolled successfully");
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Student enrolled successfully");
+            response.put("studentId", studentId);
+            response.put("courseId", courseId);
+            response.put("semester", semester);
+            response.put("academicYear", academicYear);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("Enrollment failed: " + e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Enrollment failed");
+            errorResponse.put("message", e.getMessage());
+            
+            // Return 404 for not found resources, 400 for other validation errors
+            if (e.getMessage().contains("not found") || e.getMessage().contains("does not exist")) {
+                return ResponseEntity.status(404).body(errorResponse);
+            }
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 

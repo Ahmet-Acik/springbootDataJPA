@@ -87,13 +87,41 @@ data/
 
 ## 🧪 Running Tests
 
+This project includes **127 comprehensive tests** covering unit, integration, and end-to-end scenarios.
+
 ```bash
-# Run all tests
-./mvnw test
+# Run all tests (unit + integration) - RECOMMENDED
+./mvnw clean verify
+
+# Run only unit tests (89 repository tests)
+./mvnw clean test
+
+# Run only integration tests (38 tests)
+./mvnw clean verify -P integration-tests -DskipTests=true
+
+# Run tests with coverage report
+./mvnw clean verify jacoco:report
+
+# Run tests quietly (less output)
+./mvnw clean verify -q
 
 # Run specific test class
 ./mvnw test -Dtest=StudentRepositoryTest
+
+# Run specific integration test
+./mvnw verify -Dit.test=EndToEndIntegrationTest
+
+# Run specific test method
+./mvnw test -Dtest=StudentRepositoryTest#shouldFindByEmail
 ```
+
+### 📊 Test Coverage
+- **89 Unit Tests**: Repository layer testing with `@DataJpaTest`
+- **38 Integration Tests**: Service, Web, and End-to-End testing
+- **Test Categories**: CRUD operations, custom queries, error handling, performance, security
+- **Coverage Report**: Available at `target/site/jacoco/index.html`
+
+> 📖 For detailed testing documentation, see [TESTING_GUIDE.md](TESTING_GUIDE.md)
 
 ## 🔒 Security Features
 

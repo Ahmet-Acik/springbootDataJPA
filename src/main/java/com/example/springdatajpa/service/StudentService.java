@@ -126,13 +126,17 @@ public class StudentService {
         enrollment.setGradePoints(gradePoints);
         enrollment.setEnrollmentStatus(Enrollment.EnrollmentStatus.COMPLETED);
         enrollmentRepository.save(enrollment);
+        
+        // Force flush to ensure the enrollment update is committed to DB
+        enrollmentRepository.flush();
 
         // Recalculate student GPA
         Long studentId = enrollment.getStudent().getStudentId();
         Double newGPA = enrollmentRepository.calculateStudentGPA(studentId);
         
         if (newGPA != null) {
-            studentRepository.updateStudentGpa(studentId, BigDecimal.valueOf(newGPA));
+            BigDecimal gpaToUpdate = BigDecimal.valueOf(newGPA);
+            studentRepository.updateStudentGpa(studentId, gpaToUpdate);
         }
     }
 

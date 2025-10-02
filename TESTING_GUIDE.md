@@ -4,9 +4,9 @@ This Spring Boot project has been enhanced with comprehensive testing capabiliti
 
 ## Test Summary
 
-- **Total Tests**: 118 (all test types now auto-running)  
+- **Total Tests**: 127 (all test types now auto-running)  
 - **Surefire Plugin**: 89 repository tests (unit tests)
-- **Failsafe Plugin**: 29 integration tests (service + web + e2e)
+- **Failsafe Plugin**: 38 integration tests (service + web + e2e)
 - **Test Classes**: 7  
 - **Test Coverage**: Full coverage with JaCoCo reporting
 - **All Tests Passing**: ✅ 100% success rate
@@ -20,7 +20,7 @@ This Spring Boot project has been enhanced with comprehensive testing capabiliti
 - `CourseRepositoryTest` (21 tests) - Course repository operations
 - `EnrollmentRepositoryTest` (31 tests) - Enrollment repository with complex relationships
 
-### Integration Tests (29 tests) - *Runs with Failsafe*
+### Integration Tests (38 tests) - *Runs with Failsafe*
 
 **Service Integration Tests (13 tests):**
 - `StudentServiceIntegrationTest` nested classes - Business logic validation
@@ -38,10 +38,14 @@ This Spring Boot project has been enhanced with comprehensive testing capabiliti
   - `StudentSearchApiTests` (2 tests)
   - `StudentCRUDApiTests` (6 tests)
 
-**End-to-End Integration Tests (4 tests):**
+**End-to-End Integration Tests (13 tests):**
 - `EndToEndIntegrationTest` nested classes - Complete workflow testing from HTTP to database
-  - `ErrorHandlingE2ETests` (2 tests)
   - `CompleteStudentJourneyTests` (2 tests)
+  - `ErrorHandlingE2ETests` (2 tests)
+  - `PerformanceE2ETests` (3 tests)
+  - `DataIntegrityE2ETests` (2 tests)
+  - `EdgeCasesE2ETests` (2 tests)
+  - `SecurityE2ETests` (2 tests)
 
 **✅ All integration tests now auto-run with `./mvnw clean verify` thanks to updated Maven configuration.**
 
@@ -62,7 +66,7 @@ This Spring Boot project has been enhanced with comprehensive testing capabiliti
 
 ### Maven Profiles for Different Test Types
 
-#### 1. All Tests (Default - 118 tests)
+#### 1. All Tests (Default - 127 tests)
 ```bash
 # Profile is active by default
 ./mvnw clean verify
@@ -70,7 +74,7 @@ This Spring Boot project has been enhanced with comprehensive testing capabiliti
 # Or explicitly specify the profile
 ./mvnw clean verify -P all-tests
 ```
-**Results:** 89 repository tests (Surefire) + 29 integration tests (Failsafe) = **118 total tests**
+**Results:** 89 repository tests (Surefire) + 38 integration tests (Failsafe) = **127 total tests**
 
 #### 2. Unit Tests Only (89 tests)
 ```bash
@@ -78,7 +82,7 @@ This Spring Boot project has been enhanced with comprehensive testing capabiliti
 ```
 Runs only repository unit tests with Surefire plugin.
 
-#### 3. Integration Tests Only (29 tests)
+#### 3. Integration Tests Only (38 tests)
 ```bash
 ./mvnw clean verify -P integration-tests -DskipTests=true
 ```

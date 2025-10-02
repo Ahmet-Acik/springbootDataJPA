@@ -117,8 +117,9 @@ This project includes **127 comprehensive tests** covering unit, integration, an
 
 ### 📊 Test Coverage
 - **89 Unit Tests**: Repository layer testing with `@DataJpaTest`
-- **38 Integration Tests**: Service, Web, and End-to-End testing
+- **38 Integration Tests**: Service, Web, and End-to-End testing with **MockMvc**
 - **Test Categories**: CRUD operations, custom queries, error handling, performance, security
+- **Testing Framework**: JUnit 5, MockMvc, Hamcrest matchers
 - **Coverage Report**: Available at `target/site/jacoco/index.html`
 
 > 📖 For detailed testing documentation, see [TESTING_GUIDE.md](TESTING_GUIDE.md)

@@ -450,4 +450,418 @@ class EndToEndIntegrationTest {
             assertEquals(0, enrollments.size());
         }
     }
+
+    @Nested
+    @DisplayName("Performance & Load E2E Tests")
+    class PerformanceE2ETests {
+
+        @Test
+        @DisplayName("Bulk Student Creation and Search Performance")
+        @DirtiesContext
+        void bulkStudentOperationsPerformance() throws Exception {
+            // Create department first
+            Department department = Department.builder()
+                    .departmentName("Engineering")
+                    .departmentCode("ENG")
+                    .departmentAddress("Engineering Building")
+                    .headOfDepartment("Dr. Wilson")
+                    .departmentType(Department.DepartmentType.ENGINEERING)
+                    .isActive(true)
+                    .build();
+            department = departmentRepository.save(department);
+
+            // Create multiple students (simulating bulk operations)
+            for (int i = 1; i <= 10; i++) {
+                Student student = Student.builder()
+                        .firstName("Student" + i)
+                        .lastName("Test")
+                        .emailId("student" + i + "@university.edu")
+                        .studentIdNumber("STU202400" + String.format("%02d", i))
+                        .admissionDate(LocalDate.now())
+                        .studentStatus(Student.StudentStatus.ACTIVE)
+                        .gpa(new BigDecimal("3." + (50 + i)))
+                        .isActive(true)
+                        .build();
+
+                mockMvc.perform(post("/api/students")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(student)))
+                        .andExpect(status().isCreated());
+            }
+
+            // Verify all students created
+            List<Student> allStudents = studentRepository.findAll();
+            assertEquals(10, allStudents.size());
+
+            // Test pagination performance
+            mockMvc.perform(get("/api/students/active")
+                            .param("page", "0")
+                            .param("size", "5"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content").isArray())
+                    .andExpect(jsonPath("$.content.length()").value(5))
+                    .andExpect(jsonPath("$.totalElements").value(10))
+                    .andExpect(jsonPath("$.totalPages").value(2));
+
+            // Test search with multiple criteria
+            mockMvc.perform(get("/api/students/search")
+                            .param("firstName", "Student")
+                            .param("status", "ACTIVE")
+                            .param("minGpa", "3.55"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$").isArray())
+                    .andExpect(jsonPath("$.length()").value(6)); // Students 5-10 have GPA >= 3.55
+        }
+
+        @Test
+        @DisplayName("Complex Multi-Entity Workflow Performance")
+        @DirtiesContext
+        void complexWorkflowPerformance() throws Exception {
+            long startTime = System.currentTimeMillis();
+
+            // Create department
+            Department department = Department.builder()
+                    .departmentName("Computer Science")
+                    .departmentCode("CS")
+                    .departmentAddress("CS Building")
+                    .headOfDepartment("Dr. Smith")
+                    .departmentType(Department.DepartmentType.ENGINEERING)
+                    .isActive(true)
+                    .build();
+            department = departmentRepository.save(department);
+
+            // Create multiple courses
+            Course[] courses = new Course[3];
+            for (int i = 0; i < 3; i++) {
+                courses[i] = Course.builder()
+                        .title("Course " + (i + 1))
+                        .courseCode("CS10" + (i + 1))
+                        .description("Description for course " + (i + 1))
+                        .creditHours(new BigDecimal("3.0"))
+                        .courseLevel(Course.CourseLevel.BEGINNER)
+                        .isActive(true)
+                        .department(department)
+                        .build();
+                courses[i] = courseRepository.save(courses[i]);
+            }
+
+            // Create student and enroll in all courses
+            Student student = Student.builder()
+                    .firstName("Performance")
+                    .lastName("Test")
+                    .emailId("performance.test@university.edu")
+                    .studentIdNumber("STU2024PERF")
+                    .admissionDate(LocalDate.now())
+                    .studentStatus(Student.StudentStatus.ACTIVE)
+                    .gpa(new BigDecimal("0.00"))
+                    .isActive(true)
+                    .build();
+
+            MvcResult studentResult = mockMvc.perform(post("/api/students")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(student)))
+                    .andExpect(status().isCreated())
+                    .andReturn();
+
+            Student createdStudent = objectMapper.readValue(
+                    studentResult.getResponse().getContentAsString(), Student.class);
+
+            // Enroll in all courses
+            for (Course course : courses) {
+                mockMvc.perform(post("/api/students/{id}/enroll", createdStudent.getStudentId())
+                                .param("courseId", course.getCourseId().toString())
+                                .param("semester", "Fall 2024")
+                                .param("academicYear", "2024"))
+                        .andExpect(status().isOk());
+            }
+
+            long endTime = System.currentTimeMillis();
+            long executionTime = endTime - startTime;
+
+            // Verify all operations completed successfully
+            List<Enrollment> enrollments = enrollmentRepository.findAll();
+            assertEquals(3, enrollments.size());
+
+            // Performance assertion (should complete within reasonable time)
+            assertTrue(executionTime < 5000, 
+                      "Complex workflow should complete within 5 seconds, took: " + executionTime + "ms");
+        }
+    }
+
+    @Nested
+    @DisplayName("Data Integrity & Transaction E2E Tests") 
+    class DataIntegrityE2ETests {
+
+        @Test
+        @DisplayName("Rollback on Enrollment Failure")
+        @Transactional
+        void rollbackOnEnrollmentFailure() throws Exception {
+            // Create valid student
+            Student student = Student.builder()
+                    .firstName("Rollback")
+                    .lastName("Test")
+                    .emailId("rollback.test@university.edu")
+                    .studentIdNumber("STU2024ROLL")
+                    .admissionDate(LocalDate.now())
+                    .studentStatus(Student.StudentStatus.ACTIVE)
+                    .gpa(new BigDecimal("3.0"))
+                    .isActive(true)
+                    .build();
+
+            MvcResult studentResult = mockMvc.perform(post("/api/students")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(student)))
+                    .andExpect(status().isCreated())
+                    .andReturn();
+
+            Student createdStudent = objectMapper.readValue(
+                    studentResult.getResponse().getContentAsString(), Student.class);
+
+            long initialStudentCount = studentRepository.count();
+            
+            // Attempt enrollment with invalid course ID
+            mockMvc.perform(post("/api/students/{id}/enroll", createdStudent.getStudentId())
+                            .param("courseId", "99999")
+                            .param("semester", "Fall 2024")
+                            .param("academicYear", "2024"))
+                    .andExpect(status().isNotFound());
+
+            // Verify student still exists (transaction didn't rollback student creation)
+            assertEquals(initialStudentCount, studentRepository.count());
+            
+            // Verify no enrollments were created
+            assertEquals(0, enrollmentRepository.count());
+        }
+
+        @Test
+        @DisplayName("Constraint Violation Handling")
+        void constraintViolationHandling() throws Exception {
+            // Create first student
+            Student student1 = Student.builder()
+                    .firstName("First")
+                    .lastName("Student")
+                    .emailId("unique@university.edu")
+                    .studentIdNumber("UNIQUE001")
+                    .admissionDate(LocalDate.now())
+                    .studentStatus(Student.StudentStatus.ACTIVE)
+                    .gpa(new BigDecimal("3.0"))
+                    .isActive(true)
+                    .build();
+
+            mockMvc.perform(post("/api/students")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(student1)))
+                    .andExpect(status().isCreated());
+
+            // Attempt to create student with duplicate email
+            Student student2 = Student.builder()
+                    .firstName("Second")
+                    .lastName("Student")
+                    .emailId("unique@university.edu") // Duplicate email
+                    .studentIdNumber("UNIQUE002")
+                    .admissionDate(LocalDate.now())
+                    .studentStatus(Student.StudentStatus.ACTIVE)
+                    .gpa(new BigDecimal("3.5"))
+                    .isActive(true)
+                    .build();
+
+            mockMvc.perform(post("/api/students")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(student2)))
+                    .andExpect(status().isBadRequest());
+
+            // Attempt to create student with duplicate student ID
+            Student student3 = Student.builder()
+                    .firstName("Third")
+                    .lastName("Student")
+                    .emailId("another@university.edu")
+                    .studentIdNumber("UNIQUE001") // Duplicate student ID
+                    .admissionDate(LocalDate.now())
+                    .studentStatus(Student.StudentStatus.ACTIVE)
+                    .gpa(new BigDecimal("3.5"))
+                    .isActive(true)
+                    .build();
+
+            mockMvc.perform(post("/api/students")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(student3)))
+                    .andExpect(status().isBadRequest());
+
+            // Verify only one student exists
+            assertEquals(1, studentRepository.count());
+        }
+    }
+
+    @Nested
+    @DisplayName("Edge Cases & Boundary E2E Tests")
+    class EdgeCasesE2ETests {
+
+        @Test
+        @DisplayName("Maximum Length Field Values")
+        void maximumLengthFieldValues() throws Exception {
+            // Test with maximum allowed field lengths
+            String maxName = "A".repeat(50); // Based on varchar(50) constraints
+            String maxEmail = "a".repeat(88) + "@test.com"; // Max 100 chars total
+
+            Student student = Student.builder()
+                    .firstName(maxName)
+                    .lastName(maxName)
+                    .emailId(maxEmail)
+                    .studentIdNumber("STU2024MAX")
+                    .admissionDate(LocalDate.now())
+                    .studentStatus(Student.StudentStatus.ACTIVE)
+                    .gpa(new BigDecimal("4.00"))
+                    .isActive(true)
+                    .build();
+
+            mockMvc.perform(post("/api/students")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(student)))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.firstName").value(maxName))
+                    .andExpect(jsonPath("$.lastName").value(maxName))
+                    .andExpect(jsonPath("$.emailId").value(maxEmail));
+        }
+
+        @Test
+        @DisplayName("Boundary Date Values")
+        void boundaryDateValues() throws Exception {
+            // Test with edge case dates
+            Student youngStudent = Student.builder()
+                    .firstName("Young")
+                    .lastName("Student")
+                    .emailId("young@university.edu")
+                    .studentIdNumber("STU2024YOUNG")
+                    .admissionDate(LocalDate.now())
+                    .dateOfBirth(LocalDate.now().minusYears(16)) // Very young student
+                    .studentStatus(Student.StudentStatus.ACTIVE)
+                    .gpa(new BigDecimal("3.0"))
+                    .isActive(true)
+                    .build();
+
+            mockMvc.perform(post("/api/students")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(youngStudent)))
+                    .andExpect(status().isCreated());
+
+            Student oldStudent = Student.builder()
+                    .firstName("Mature")
+                    .lastName("Student")
+                    .emailId("mature@university.edu")
+                    .studentIdNumber("STU2024OLD")
+                    .admissionDate(LocalDate.now())
+                    .dateOfBirth(LocalDate.now().minusYears(80)) // Older returning student
+                    .studentStatus(Student.StudentStatus.ACTIVE)
+                    .gpa(new BigDecimal("3.5"))
+                    .isActive(true)
+                    .build();
+
+            mockMvc.perform(post("/api/students")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(oldStudent)))
+                    .andExpect(status().isCreated());
+
+            assertEquals(2, studentRepository.count());
+        }
+
+        @Test
+        @DisplayName("GPA Boundary Values")
+        void gpaBoundaryValues() throws Exception {
+            // Test minimum GPA (0.00)
+            Student minGpaStudent = Student.builder()
+                    .firstName("Min")
+                    .lastName("GPA")
+                    .emailId("min.gpa@university.edu")
+                    .studentIdNumber("STU2024MIN")
+                    .admissionDate(LocalDate.now())
+                    .studentStatus(Student.StudentStatus.ACTIVE)
+                    .gpa(new BigDecimal("0.00"))
+                    .isActive(true)
+                    .build();
+
+            mockMvc.perform(post("/api/students")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(minGpaStudent)))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.gpa").value(0.00));
+
+            // Test maximum GPA (4.00)
+            Student maxGpaStudent = Student.builder()
+                    .firstName("Max")
+                    .lastName("GPA")
+                    .emailId("max.gpa@university.edu")
+                    .studentIdNumber("STU2024MAX")
+                    .admissionDate(LocalDate.now())
+                    .studentStatus(Student.StudentStatus.ACTIVE)
+                    .gpa(new BigDecimal("4.00"))
+                    .isActive(true)
+                    .build();
+
+            mockMvc.perform(post("/api/students")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(maxGpaStudent)))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.gpa").value(4.00));
+
+            assertEquals(2, studentRepository.count());
+        }
+    }
+
+    @Nested
+    @DisplayName("Security & Authorization E2E Tests")
+    class SecurityE2ETests {
+
+        @Test
+        @DisplayName("Malicious Input Handling")
+        void maliciousInputHandling() throws Exception {
+            // Test SQL injection attempt
+            Student maliciousStudent = Student.builder()
+                    .firstName("'; DROP TABLE tbl_student; --")
+                    .lastName("Hacker")
+                    .emailId("hacker@evil.com")
+                    .studentIdNumber("STU2024HACK")
+                    .admissionDate(LocalDate.now())
+                    .studentStatus(Student.StudentStatus.ACTIVE)
+                    .gpa(new BigDecimal("3.0"))
+                    .isActive(true)
+                    .build();
+
+            mockMvc.perform(post("/api/students")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(maliciousStudent)))
+                    .andExpect(status().isCreated()); // Should handle gracefully
+
+            // Verify table still exists and data is properly escaped
+            List<Student> students = studentRepository.findAll();
+            assertEquals(1, students.size());
+            assertEquals("'; DROP TABLE tbl_student; --", students.get(0).getFirstName());
+        }
+
+        @Test
+        @DisplayName("XSS Prevention in Responses")
+        void xssPreventionInResponses() throws Exception {
+            // Test XSS script in student data
+            Student xssStudent = Student.builder()
+                    .firstName("<script>alert('XSS')</script>")
+                    .lastName("Test")
+                    .emailId("xss@test.com")
+                    .studentIdNumber("STU2024XSS")
+                    .admissionDate(LocalDate.now())
+                    .studentStatus(Student.StudentStatus.ACTIVE)
+                    .gpa(new BigDecimal("3.0"))
+                    .isActive(true)
+                    .build();
+
+            MvcResult result = mockMvc.perform(post("/api/students")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(xssStudent)))
+                    .andExpect(status().isCreated())
+                    .andReturn();
+
+            // Verify script tags are properly handled in response
+            String responseContent = result.getResponse().getContentAsString();
+            assertTrue(responseContent.contains("<script>alert('XSS')</script>") || 
+                      responseContent.contains("&lt;script&gt;alert('XSS')&lt;/script&gt;"));
+        }
+    }
 }

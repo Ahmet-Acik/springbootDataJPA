@@ -2,7 +2,7 @@
 
 A comprehensive Spring Boot application demonstrating JPA/Hibernate features with secure credential management.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Environment Setup (Recommended)
 
@@ -43,7 +43,7 @@ source .env
 DB_PASSWORD=your_password ./mvnw spring-boot:run
 ```
 
-## 🗄️ Database Configuration
+## Database Configuration
 
 ### MySQL (Production/Development)
 ```bash
@@ -64,7 +64,7 @@ export DB_USERNAME="sa"
 export DB_PASSWORD=""
 ```
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 src/
@@ -85,7 +85,7 @@ data/
 └── README.md               # Database setup guide
 ```
 
-## 🧪 Running Tests
+## Running Tests
 
 This project includes **127 comprehensive tests** covering unit, integration, and end-to-end scenarios.
 
@@ -115,7 +115,7 @@ This project includes **127 comprehensive tests** covering unit, integration, an
 ./mvnw test -Dtest=StudentRepositoryTest#shouldFindByEmail
 ```
 
-### 📊 Test Coverage
+### Test Coverage
 - **89 Unit Tests**: Repository layer testing with `@DataJpaTest`
 - **38 Integration Tests**: Service, Web, and End-to-End testing with **MockMvc**
 - **Test Categories**: CRUD operations, custom queries, error handling, performance, security
@@ -124,21 +124,21 @@ This project includes **127 comprehensive tests** covering unit, integration, an
 
 > 📖 For detailed testing documentation, see [TESTING_GUIDE.md](TESTING_GUIDE.md)
 
-## 🔒 Security Features
+## Security Features
 
-### ✅ What's Secure:
+### What's Secure:
 - **Environment Variables**: All credentials use environment variables
 - **Git Safety**: `.env` files are automatically ignored by git
 - **Template Files**: Only placeholder values in version control
 - **Multiple Options**: Several secure credential management approaches
 
-### ⚠️ Security Best Practices:
+### Security Best Practices:
 - Never put real passwords in `application.properties`
 - Use different passwords for different environments
 - Don't use root user in production
 - Set secure file permissions: `chmod 600 .env`
 
-## 📚 Learning Features
+## Learning Features
 
 This project demonstrates:
 
@@ -160,7 +160,7 @@ This project demonstrates:
 - Transaction management
 - Connection pooling
 
-## 🛠️ Development Tools
+## Development Tools
 
 ### Database Setup:
 ```bash
@@ -183,13 +183,13 @@ This project demonstrates:
 source .env
 ```
 
-## 📋 Available Profiles
+## Available Profiles
 
 - `default`: H2 in-memory database (testing)
 - `mysql`: MySQL database (development/production)
 - `test`: H2 with test-specific configuration
 
-## 🎯 Example Usage
+## Example Usage
 
 ```bash
 # Development with MySQL
@@ -202,30 +202,30 @@ SPRING_PROFILES_ACTIVE=test ./mvnw spring-boot:run
 java -jar target/spring-data-jpa-0.0.1-SNAPSHOT.jar --spring.config.location=classpath:/application.properties,/etc/myapp/application.properties
 ```
 
-## 📚 API Documentation
+## API Documentation
 
 This project includes comprehensive REST API documentation powered by **Swagger/OpenAPI 3**:
 
-### 🌐 Interactive Documentation
+### Interactive Documentation
 - **Swagger UI**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 - **OpenAPI JSON**: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
 - **OpenAPI YAML**: [http://localhost:8080/v3/api-docs.yaml](http://localhost:8080/v3/api-docs.yaml)
 
-### 🎯 API Endpoints
+### API Endpoints
 - **Students API**: `/api/students` - Student management operations
 - **Courses API**: `/api/courses` - Course management and search
 - **Departments API**: `/api/departments` - Department CRUD and statistics  
 - **Enrollments API**: `/api/enrollments` - Student enrollment management
 
-### ✨ Features
+### Features
 - **Interactive Testing**: Test endpoints directly from the browser
 - **Comprehensive Documentation**: Detailed parameter descriptions and examples
 - **Schema Validation**: Request/response model documentation
 - **Error Handling**: HTTP status codes and error response formats
 
-> 📖 For detailed implementation information, see [SWAGGER_IMPLEMENTATION.md](SWAGGER_IMPLEMENTATION.md)
+> For detailed implementation information, see [SWAGGER_IMPLEMENTATION.md](SWAGGER_IMPLEMENTATION.md)
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -233,13 +233,13 @@ This project includes comprehensive REST API documentation powered by **Swagger/
 4. Ensure tests pass: `./mvnw test`
 5. Submit a pull request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 
-**⚠️ Remember**: This is a learning project. In production, use proper secrets management solutions like:
+**Remember**: This is a learning project. In production, use proper secrets management solutions like:
 - Spring Cloud Config
 - HashiCorp Vault
 - Kubernetes Secrets

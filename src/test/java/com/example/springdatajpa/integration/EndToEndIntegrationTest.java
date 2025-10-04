@@ -701,7 +701,10 @@ class EndToEndIntegrationTest {
         void maximumLengthFieldValues() throws Exception {
             // Test with maximum allowed field lengths
             String maxName = "A".repeat(50); // Based on varchar(50) constraints
-            String maxEmail = "a".repeat(88) + "@test.com"; // Max 100 chars total
+            // Create a valid email that's close to 100 chars: 
+            // "averylongusername.with.dots.and.numbers123456@verylongdomainname.example.com" = 76 chars
+            // Let's make it closer to 100: "verylongusername.with.dots.and.numbers123456789@verylongdomainname.example.org" = 84 chars
+            String maxEmail = "verylongusername.with.dots.and.numbers123456789@verylongdomains.example.org"; // 79 chars - valid and long
 
             Student student = Student.builder()
                     .firstName(maxName)

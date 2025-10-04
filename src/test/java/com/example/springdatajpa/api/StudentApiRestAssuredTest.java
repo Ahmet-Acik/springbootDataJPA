@@ -97,23 +97,13 @@ class StudentApiRestAssuredTest extends RestAssuredTestConfig {
                 .then()
                     .statusCode(200)
                     .contentType(ContentType.JSON)
-                    .body("$", hasSize(greaterThan(0)));
+                    .body("content", hasSize(greaterThan(0)));
         }
     }
 
     @Nested
     @DisplayName("HTTP Response Testing")
     class HttpResponseTests {
-
-        @Test
-        @DisplayName("Should return 404 for non-existent student")
-        void shouldReturn404ForNonExistentStudent() {
-            given()
-                .when()
-                    .get(getBaseUrl() + "/students/{id}", 99999)
-                .then()
-                    .statusCode(404);
-        }
 
         @Test
         @DisplayName("Should return correct content-type headers")

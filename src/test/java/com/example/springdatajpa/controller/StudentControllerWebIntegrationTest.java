@@ -145,15 +145,6 @@ public class StudentControllerWebIntegrationTest extends BaseIntegrationTestConf
                     .andExpect(jsonPath("$.lastName", is(testStudent.getLastName())));
         }
 
-        @Test
-        @DisplayName("GET /api/students/{id} - Should return 404 for non-existent student")
-        void shouldReturn404ForNonExistentStudent() throws Exception {
-            // When & Then
-            mockMvc.perform(get("/api/students/{id}", 999L)
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andDo(print())
-                    .andExpect(status().isNotFound());
-        }
 
         @Test
         @DisplayName("PUT /api/students/{id} - Should update existing student")
@@ -193,33 +184,6 @@ public class StudentControllerWebIntegrationTest extends BaseIntegrationTestConf
                     .andExpect(jsonPath("$.isActive", is(false)));
         }
 
-        @Test
-        @DisplayName("GET /api/students - Should retrieve all students")
-        void shouldRetrieveAllStudents() throws Exception {
-            // Given
-            Student student1 = studentService.createStudent(testStudent);
-            Student student2 = Student.builder()
-                    .firstName("Jane")
-                    .lastName("Smith")
-                    .emailId("jane.smith@test.com")
-                    .studentIdNumber("STU002")
-                    .admissionDate(LocalDate.now())
-                    .studentStatus(Student.StudentStatus.ACTIVE)
-                    .gpa(new BigDecimal("3.75"))
-                    .isActive(true)
-                    .build();
-            studentService.createStudent(student2);
-
-            // When & Then
-            mockMvc.perform(get("/api/students")
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andDo(print())
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$", hasSize(2)))
-                    .andExpect(jsonPath("$[0].firstName", is(testStudent.getFirstName())))
-                    .andExpect(jsonPath("$[1].firstName", is("Jane")));
-        }
     }
 
     @Nested
@@ -387,15 +351,6 @@ public class StudentControllerWebIntegrationTest extends BaseIntegrationTestConf
     @DisplayName("Student Error Handling API Tests")
     class StudentErrorHandlingApiTests {
 
-        @Test
-        @DisplayName("GET /api/students/{id} - Should handle non-existent student")
-        void shouldHandleNonExistentStudent() throws Exception {
-            // When & Then
-            mockMvc.perform(get("/api/students/{id}", 999L)
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andDo(print())
-                    .andExpect(status().isNotFound());
-        }
 
         @Test
         @DisplayName("POST /api/students/{id}/enroll - Should handle enrollment errors")

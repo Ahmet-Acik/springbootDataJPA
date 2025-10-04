@@ -125,10 +125,10 @@ Maven automatically discovers REST Assured tests using the **Surefire plugin** b
 #### How Maven Sees Our Tests
 ```bash
 # Maven discovers these REST Assured test files:
-✅ StudentApiRestAssuredTest.java
-✅ AdvancedStudentApiRestAssuredTest.java  
-✅ StudentApiJsonSchemaRestAssuredTest.java
-✅ RestAssuredTestConfig.java (configuration only)
+StudentApiRestAssuredTest.java
+AdvancedStudentApiRestAssuredTest.java  
+StudentApiJsonSchemaRestAssuredTest.java
+RestAssuredTestConfig.java (configuration only)
 ```
 
 ### Maven Test Execution
@@ -451,7 +451,7 @@ void tearDown() {
 
 ### 3. Assertion Strategies
 ```java
-// ✅ Good: Use AssertJ for complex validations
+// Good: Use AssertJ for complex validations
 List<Student> students = extractStudentsFromResponse(response);
 assertThat(students)
     .hasSize(3)
@@ -590,11 +590,11 @@ void fastControllerTest() {
 // Problem: Mixing assertion libraries
 // Solution: Choose one approach consistently
 
-// ✅ Use AssertJ
+// Use AssertJ
 List<Student> students = response.extract().jsonPath().getList(".", Student.class);
 assertThat(students).hasSize(3);
 
-// ✅ Or use Hamcrest
+// Or use Hamcrest
 .body("$", hasSize(3))
 ```
 
@@ -659,20 +659,20 @@ StudentApiJsonSchemaRestAssuredTest: 7 tests (Schema validation)
 ## When to Use Each Testing Approach
 
 ### Use REST Assured When:
-- ✅ Testing complete HTTP request/response cycle
-- ✅ Validating JSON responses with complex structures
-- ✅ Testing HTTP headers, status codes, cookies
-- ✅ End-to-end API contract testing
-- ✅ Integration testing with real HTTP stack
-- ✅ Performance testing (response times)
-- ✅ JSON schema validation
+- Testing complete HTTP request/response cycle
+- Validating JSON responses with complex structures
+- Testing HTTP headers, status codes, cookies
+- End-to-end API contract testing
+- Integration testing with real HTTP stack
+- Performance testing (response times)
+- JSON schema validation
 
 ### Use MockMvc When:
-- ✅ Fast controller unit tests
-- ✅ Testing Spring Security configurations
-- ✅ Validation testing
-- ✅ Controller logic testing
-- ✅ Performance-sensitive test suites
+- Fast controller unit tests
+- Testing Spring Security configurations
+- Validation testing
+- Controller logic testing
+- Performance-sensitive test suites
 
 ## Related Resources
 

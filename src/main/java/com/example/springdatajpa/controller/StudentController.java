@@ -46,12 +46,8 @@ public class StudentController {
     })
     @PostMapping
     public ResponseEntity<Student> createStudent(@Valid @RequestBody Student student) {
-        try {
-            Student createdStudent = studentService.createStudent(student);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdStudent);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Student createdStudent = studentService.createStudent(student);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdStudent);
     }
 
     @Operation(summary = "Get student by ID", description = "Retrieves a student by their ID")
@@ -61,13 +57,24 @@ public class StudentController {
             @PathVariable Long id) {
         return studentService.getStudentById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
     }
 
-    @Operation(summary = "Get all students", description = "Retrieves all students")
+    @Operation(summary = "Get all students with pagination", description = "Retrieves all students with pagination support")
     @GetMapping
-    public ResponseEntity<List<Student>> getAllStudents() {
-        List<Student> students = studentService.getAllStudents();
+    public ResponseEntity<Page<Student>> getAllStudents(
+            @Parameter(description = "Page number", example = "0")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size", example = "10")
+            @RequestParam(defaultValue = "10") int size,
+            @Parameter(description = "Sort field", example = "firstName")
+            @RequestParam(defaultValue = "firstName") String sortBy,
+            @Parameter(description = "Sort direction", example = "asc")
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        
+        Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        Page<Student> students = studentService.getAllStudents(pageable);
         return ResponseEntity.ok(students);
     }
 
@@ -88,7 +95,7 @@ public class StudentController {
     @PutMapping("/{id}")
     public ResponseEntity<Student> updateStudent(
             @PathVariable Long id,
-            @RequestBody Student student) {
+            @Valid @RequestBody Student student) {
         try {
             Student updatedStudent = studentService.updateStudent(id, student);
             return ResponseEntity.ok(updatedStudent);
@@ -171,7 +178,7 @@ public class StudentController {
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
     @PostMapping("/batch")
-    public ResponseEntity<List<Student>> createStudentsBatch(@RequestBody List<Student> students) {
+    public ResponseEntity<List<Student>> createStudentsBatch(@Valid @RequestBody List<Student> students) {
         try {
             List<Student> createdStudents = studentService.createStudentsBatch(students);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdStudents);

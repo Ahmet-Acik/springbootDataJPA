@@ -47,7 +47,7 @@ This Spring Boot project has been enhanced with comprehensive testing capabiliti
   - `EdgeCasesE2ETests` (2 tests)
   - `SecurityE2ETests` (2 tests)
 
-**✅ All integration tests now auto-run with `./mvnw clean verify` thanks to updated Maven configuration.**
+**All integration tests now auto-run with `./mvnw clean verify` thanks to updated Maven configuration.**
 
 ## Running Tests
 

@@ -2,7 +2,7 @@
 
 This directory contains all the necessary files and scripts to set up a MySQL database for the Spring Boot JPA School Management System.
 
-## 📁 Directory Structure
+## Directory Structure
 
 ```
 data/
@@ -16,7 +16,7 @@ data/
 └── README.md                     # This file
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -110,7 +110,7 @@ export DB_HOST="localhost"
 
 3. **The `DatabaseInitializer` component will automatically create sample data**
 
-## 🔧 Configuration
+## Configuration
 
 ### Database Connection
 
@@ -134,7 +134,7 @@ export DB_USER=root
 export DB_PASSWORD=your_password
 ```
 
-## 📊 Sample Data
+## Sample Data
 
 The database will be populated with:
 
@@ -159,7 +159,7 @@ The database will be populated with:
 - Carol Davis (STU003) - GPA: 3.90
 - And 12 more...
 
-## 🔍 Testing and Analysis
+## Testing and Analysis
 
 ### Run Analysis Queries
 
@@ -194,7 +194,7 @@ GROUP BY s.student_id
 ORDER BY s.gpa DESC;
 ```
 
-## 🌟 JPA Features Demonstrated
+## JPA Features Demonstrated
 
 This database setup showcases various JPA features:
 
@@ -226,7 +226,7 @@ This database setup showcases various JPA features:
 - **Rollback Scenarios**: Custom rollback conditions
 - **Batch Operations**: Bulk insert/update operations
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Issues:
 
@@ -263,7 +263,7 @@ logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
 logging.level.org.springframework.orm.jpa=DEBUG
 ```
 
-## 📈 Performance Considerations
+## Performance Considerations
 
 ### Indexes Created:
 - Primary keys on all tables
@@ -282,7 +282,7 @@ logging.level.org.springframework.orm.jpa=DEBUG
 - Order inserts and updates for better performance
 - Versioned data batching enabled
 
-## 🔐 Security Notes
+## Security Notes
 
 - **Never use root user in production**
 - **Create dedicated database user with limited privileges**
@@ -296,7 +296,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON schooldb.* TO 'schoolapp'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-## 📚 Learning Resources
+## Learning Resources
 
 This setup is designed for learning JPA concepts:
 
@@ -305,7 +305,7 @@ This setup is designed for learning JPA concepts:
 3. **Advanced**: Transaction management, performance optimization
 4. **Expert**: Custom repositories, specifications, criteria API
 
-## 🤝 Contributing
+## Contributing
 
 To add more sample data or modify the schema:
 
@@ -316,4 +316,4 @@ To add more sample data or modify the schema:
 
 ---
 
-**Happy Learning with Spring Data JPA! 🎓**
+**Happy Learning with Spring Data JPA!**

@@ -25,7 +25,7 @@ echo ""
 
 # Copy template
 cp .env.example .env
-echo "✅ Created .env file from template"
+echo "Created .env file from template"
 
 # Get database choice
 echo "🗄️  Database Configuration:"
@@ -67,7 +67,7 @@ DB_DIALECT=org.hibernate.dialect.MySQLDialect
 SPRING_PROFILES_ACTIVE=mysql
 EOF
 
-    echo "✅ MySQL configuration saved to .env"
+    echo "MySQL configuration saved to .env"
     
 elif [ "$db_choice" = "2" ]; then
     # Update .env file with H2 settings
@@ -83,7 +83,7 @@ DB_DIALECT=org.hibernate.dialect.H2Dialect
 SPRING_PROFILES_ACTIVE=test
 EOF
 
-    echo "✅ H2 configuration saved to .env"
+    echo "H2 configuration saved to .env"
 else
     echo "❌ Invalid choice. Please run the script again."
     rm -f .env

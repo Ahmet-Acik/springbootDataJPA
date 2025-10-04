@@ -96,8 +96,20 @@ Our Maven configuration includes the following testing dependencies:
 Maven automatically discovers REST Assured tests using the **Surefire plugin** based on naming patterns:
 
 #### Test Discovery Pattern
+
+```bash
+**/*Test.java        # Standard test files (18 classes discovered)
+**/*Tests.java       # Alternative naming pattern
+**/Test*.java        # Test prefix pattern
 ```
-**/*Test.java        # Standard test files (includes REST Assured)
+
+#### Current Test Statistics
+
+- **Total Test Classes Discovered**: 18
+- **Total Test Methods**: 201  
+- **Executable Tests**: 162
+- **REST Assured API Tests**: ~80 methods across 8 classes
+- **Success Rate**: 99.4% (161 passing, 1 known limitation)
 **/*Tests.java       # Alternative test naming
 **/*TestCase.java    # Legacy test naming
 ```

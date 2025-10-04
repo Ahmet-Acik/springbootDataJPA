@@ -71,56 +71,72 @@ src/
 ├── main/
 │   ├── java/com/example/springdatajpa/
 │   │   ├── SpringDataJpaApplication.java
-│   │   ├── entity/           # JPA entities
+│   │   ├── config/           # Configuration classes
+│   │   ├── controller/       # REST API controllers
+│   │   ├── entity/           # JPA entities (Student, Course, Department, Enrollment, Guardian)
+│   │   ├── exception/        # Custom exception handling
 │   │   ├── repository/       # Spring Data repositories
 │   │   └── service/          # Business logic services
 │   └── resources/
 │       ├── application.properties
 │       ├── application-mysql.properties
-│       └── application-local.properties.example
-├── test/                     # Unit and integration tests
+│       └── application-test.properties
+├── test/                     # 18 test classes with 201 test methods
+│   ├── java/com/example/springdatajpa/
+│   │   ├── api/              # REST Assured API tests (8 classes)
+│   │   ├── controller/       # MockMvc controller tests (3 classes)
+│   │   ├── repository/       # JPA repository tests (4 classes)
+│   │   ├── service/          # Service layer tests (2 classes)
+│   │   ├── integration/      # End-to-end tests (1 class)
+│   │   └── debug/            # Debug/validation tests (2 classes)
+│   └── resources/
+│       └── application-test.properties
+docs/
+├── TESTING_GUIDE.md         # Comprehensive testing documentation
+└── REST_ASSURED_TESTING.md  # REST Assured specific guide
 data/
 ├── setup_database.sh        # Database initialization
-├── sql/                     # SQL scripts
-└── README.md               # Database setup guide
+└── sql/                     # SQL scripts
 ```
 
 ## Running Tests
 
-This project includes **127 comprehensive tests** covering unit, integration, and end-to-end scenarios.
+This project includes **162 comprehensive executable tests** from **18 test classes** with **201 test methods** total, covering unit, integration, and end-to-end scenarios with a **99.4% success rate**.
 
 ```bash
-# Run all tests (unit + integration) - RECOMMENDED
-./mvnw clean verify
+# Run all tests - RECOMMENDED
+./mvnw test
 
-# Run only unit tests (89 repository tests)
-./mvnw clean test
-
-# Run only integration tests (38 tests)
-./mvnw clean verify -P integration-tests -DskipTests=true
-
-# Run tests with coverage report
-./mvnw clean verify jacoco:report
-
-# Run tests quietly (less output)
-./mvnw clean verify -q
+# Run tests quietly (less output)  
+./mvnw test -q
 
 # Run specific test class
 ./mvnw test -Dtest=StudentRepositoryTest
 
-# Run specific integration test
-./mvnw verify -Dit.test=EndToEndIntegrationTest
-
 # Run specific test method
 ./mvnw test -Dtest=StudentRepositoryTest#shouldFindByEmail
+
+# Run tests with specific category
+./mvnw test -Dtest="*ApiTest"           # API tests
+./mvnw test -Dtest="*RepositoryTest"    # Repository tests
+./mvnw test -Dtest="*ControllerTest"    # Controller tests
+
+# Run integration tests
+./mvnw test -Dtest="*IntegrationTest"
+
+# Run debug/validation tests
+./mvnw test -Dtest="*ValidationTest,*DebugTest"
 ```
 
 ### Test Coverage
-- **89 Unit Tests**: Repository layer testing with `@DataJpaTest`
-- **38 Integration Tests**: Service, Web, and End-to-End testing with **MockMvc**
-- **Test Categories**: CRUD operations, custom queries, error handling, performance, security
-- **Testing Framework**: JUnit 5, MockMvc, Hamcrest matchers
-- **Coverage Report**: Available at `target/site/jacoco/index.html`
+- **API Tests** (8 classes): REST Assured integration tests for all endpoints
+- **Repository Tests** (4 classes): JPA repository testing with `@DataJpaTest`
+- **Controller Tests** (3 classes): MockMvc web layer testing
+- **Service Tests** (2 classes): Business logic unit testing
+- **Integration Tests** (1 class): End-to-end application testing
+- **Debug/Validation Tests** (2 classes): Specialized testing scenarios
+- **Testing Framework**: JUnit 5, REST Assured, MockMvc, AssertJ
+- **Database**: H2 in-memory for all tests with proper isolation
 
 > 📖 For detailed testing documentation, see [TESTING_GUIDE.md](TESTING_GUIDE.md)
 
@@ -140,13 +156,14 @@ This project includes **127 comprehensive tests** covering unit, integration, an
 
 ## Learning Features
 
-This project demonstrates:
+This project demonstrates comprehensive Java enterprise patterns:
 
-### JPA/Hibernate Concepts:
-- Entity relationships (One-to-One, One-to-Many, Many-to-Many)
-- Custom repository methods
-- JPQL and native queries
-- Database migrations with Hibernate DDL
+### JPA/Hibernate Concepts
+- **Entity Relationships**: @OneToMany, @ManyToOne implemented across Student-Enrollment-Course-Department
+- **Advanced Mapping**: Guardian entity with embedded relationships
+- **Custom Repository Methods**: Complex JPQL queries and method naming conventions
+- **Database Migrations**: Hibernate DDL with auto-update strategy
+- **Lazy Loading**: Performance optimization with FetchType.LAZY
 
 ### Spring Boot Features:
 - Profile-based configuration
@@ -212,10 +229,10 @@ This project includes comprehensive REST API documentation powered by **Swagger/
 - **OpenAPI YAML**: [http://localhost:8080/v3/api-docs.yaml](http://localhost:8080/v3/api-docs.yaml)
 
 ### API Endpoints
-- **Students API**: `/api/students` - Student management operations
-- **Courses API**: `/api/courses` - Course management and search
-- **Departments API**: `/api/departments` - Department CRUD and statistics  
-- **Enrollments API**: `/api/enrollments` - Student enrollment management
+- **Students API**: `/api/students` - Comprehensive student management with search, stats, batch operations, and enrollment
+- **Courses API**: `/api/courses` - Course catalog management with department relationships
+- **Departments API**: `/api/departments` - Department hierarchy and statistics
+- **Enrollments API**: `/api/enrollments` - Student-course enrollment management with grading
 
 ### Features
 - **Interactive Testing**: Test endpoints directly from the browser

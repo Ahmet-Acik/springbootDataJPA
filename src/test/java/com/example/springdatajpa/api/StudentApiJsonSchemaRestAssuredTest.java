@@ -119,27 +119,41 @@ class StudentApiJsonSchemaRestAssuredTest extends RestAssuredTestConfig {
             // Create additional students
             createAdditionalStudents();
 
-            // Define schema for student list
+            // Define schema for paginated student list
             String studentListSchema = """
                 {
                     "$schema": "http://json-schema.org/draft-07/schema#",
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "required": ["studentId", "firstName", "lastName", "emailId"],
-                        "properties": {
-                            "studentId": {"type": "integer"},
-                            "firstName": {"type": "string"},
-                            "lastName": {"type": "string"},
-                            "emailId": {"type": "string"},
-                            "gpa": {"type": "number"}
-                        }
-                    },
-                    "minItems": 1
+                    "type": "object",
+                    "required": ["content", "pageable", "totalElements", "totalPages"],
+                    "properties": {
+                        "content": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": ["studentId", "firstName", "lastName", "emailId"],
+                                "properties": {
+                                    "studentId": {"type": "integer"},
+                                    "firstName": {"type": "string"},
+                                    "lastName": {"type": "string"},
+                                    "emailId": {"type": "string"},
+                                    "gpa": {"type": "number"}
+                                }
+                            },
+                            "minItems": 1
+                        },
+                        "pageable": {"type": "object"},
+                        "totalElements": {"type": "integer"},
+                        "totalPages": {"type": "integer"},
+                        "size": {"type": "integer"},
+                        "number": {"type": "integer"},
+                        "first": {"type": "boolean"},
+                        "last": {"type": "boolean"},
+                        "empty": {"type": "boolean"}
+                    }
                 }
                 """;
 
-            // When & Then - Validate list against schema
+            // When & Then - Validate paginated list against schema
             given()
                 .when()
                     .get(getBaseUrl() + "/students")
@@ -192,7 +206,7 @@ class StudentApiJsonSchemaRestAssuredTest extends RestAssuredTestConfig {
                         .statusCode(200)
                         .extract().response();
 
-            List<Map<String, Object>> students = response.jsonPath().getList("");
+            List<Map<String, Object>> students = response.jsonPath().getList("content");
 
             // Then - Validate each student with custom assertions
             assertThat(students)

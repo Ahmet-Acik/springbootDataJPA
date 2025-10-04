@@ -5,6 +5,7 @@
 This project implements a **comprehensive testing strategy** with **18 test classes** containing **201 test methods** and **162 executable tests**. Our testing approach combines **MockMvc** for fast unit tests and **REST Assured** for comprehensive API integration tests, providing complete coverage of the Student Management API.
 
 ### 📊 Test Suite Status
+
 - **Success Rate**: 99.4% (161/162 tests passing)
 - **Test Classes**: 18 total
 - **Test Methods**: 201 total

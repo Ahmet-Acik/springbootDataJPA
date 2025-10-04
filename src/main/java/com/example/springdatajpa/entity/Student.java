@@ -1,6 +1,8 @@
 package com.example.springdatajpa.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -54,22 +56,32 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_sequence")
     private Long studentId;
     
+    @NotBlank(message = "First name is required")
+    @Size(min = 1, max = 50, message = "First name must be between 1 and 50 characters")
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
     
+    @NotBlank(message = "Last name is required")
+    @Size(min = 1, max = 50, message = "Last name must be between 1 and 50 characters")
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    @Size(max = 100, message = "Email must not exceed 100 characters")
     @Column(name = "email_address", nullable = false, unique = true, length = 100)
     private String emailId;
     
+    @Size(max = 20, message = "Student ID number must not exceed 20 characters")
     @Column(name = "student_id_number", unique = true, length = 20)
     private String studentIdNumber;
     
+    @PastOrPresent(message = "Admission date must be in the past or present")
     @Column(name = "admission_date")
     @Temporal(TemporalType.DATE)
     private LocalDate admissionDate;
     
+    @Past(message = "Date of birth must be in the past")
     @Column(name = "date_of_birth")
     @Temporal(TemporalType.DATE)
     private LocalDate dateOfBirth;
@@ -79,6 +91,9 @@ public class Student {
     @Builder.Default
     private StudentStatus studentStatus = StudentStatus.ACTIVE;
     
+    @DecimalMin(value = "0.0", message = "GPA must be at least 0.0")
+    @DecimalMax(value = "4.0", message = "GPA must not exceed 4.0")
+    @Digits(integer = 2, fraction = 2, message = "GPA must have at most 2 integer digits and 2 fractional digits")
     @Column(name = "gpa", precision = 4, scale = 2)
     private BigDecimal gpa;
     
@@ -86,6 +101,7 @@ public class Student {
     @Builder.Default
     private Boolean isActive = true;
 
+    @Valid
     @Embedded
     private Guardian guardian;
     

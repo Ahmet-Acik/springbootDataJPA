@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project implements a **dual testing approach** combining **MockMvc** for fast unit tests and **REST Assured** for comprehensive API integration tests. This guide covers everything you need to know about our REST Assured testing infrastructure.
+This project implements a **comprehensive testing strategy** with **18 test classes** containing **201 test methods** and **162 executable tests**. Our testing approach combines **MockMvc** for fast unit tests and **REST Assured** for comprehensive API integration tests, providing complete coverage of the Student Management API.
 
 ## 📋 Table of Contents
 
@@ -32,13 +32,34 @@ This project implements a **dual testing approach** combining **MockMvc** for fa
 ```
 src/test/java/com/example/springdatajpa/
 ├── config/
-│   └── RestAssuredTestConfig.java          # Base configuration
-├── api/
-│   ├── StudentApiRestAssuredTest.java      # Basic REST Assured examples
-│   ├── AdvancedStudentApiRestAssuredTest.java  # Advanced AssertJ patterns
-│   └── StudentApiJsonSchemaRestAssuredTest.java # JSON schema validation
-└── assertion/
-    └── StudentAssert.java                  # Custom AssertJ assertions
+│   ├── RestAssuredTestConfig.java          # Base REST Assured configuration
+│   ├── BaseIntegrationTestConfig.java      # Integration test base
+│   └── TestConfig.java                     # General test configuration
+├── api/                                    # REST Assured API Tests (8 classes)
+│   ├── StudentApiRestAssuredTest.java      # Basic CRUD operations
+│   ├── AdvancedStudentApiRestAssuredTest.java  # Advanced query patterns
+│   ├── StudentErrorHandlingRestAssuredTest.java # Error handling scenarios
+│   ├── StudentPerformanceRestAssuredTest.java   # Performance testing
+│   ├── StudentContentNegotiationRestAssuredTest.java # Content negotiation
+│   ├── StudentValidationRestAssuredTestFixed.java    # Validation testing
+│   ├── StudentApiJsonSchemaRestAssuredTest.java      # JSON schema validation
+│   └── SimpleConflictTest.java             # Conflict resolution testing
+├── controller/                             # Controller Tests (3 classes)
+│   ├── StudentControllerWebIntegrationTest.java # Web layer integration
+│   ├── ValidationTest.java                 # Validation logic testing
+│   └── [Additional controller tests]
+├── repository/                             # Repository Tests (2+ classes)
+│   ├── StudentRepositoryTest.java          # Student repository operations
+│   ├── CourseRepositoryTest.java           # Course repository operations
+│   └── [Additional repository tests]
+├── service/                                # Service Layer Tests
+│   └── StudentServiceIntegrationTest.java  # Service integration testing
+├── integration/                            # End-to-End Tests
+│   └── EndToEndIntegrationTest.java        # Full integration scenarios
+├── debug/                                  # Debug & Diagnostic Tests
+│   ├── ValidationDebugTest.java            # Validation debugging
+│   └── ValidationDiagnosticTest.java       # Diagnostic utilities
+└── SpringDataJpaApplicationTests.java     # Application context tests
 ```
 
 ## 🔧 Maven Integration

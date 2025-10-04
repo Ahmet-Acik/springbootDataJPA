@@ -32,6 +32,10 @@ public class StudentService {
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
     }
+    
+    public Page<Student> getAllStudents(Pageable pageable) {
+        return studentRepository.findAll(pageable);
+    }
 
     public Optional<Student> getStudentById(Long id) {
         return studentRepository.findById(id);

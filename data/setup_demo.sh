@@ -54,11 +54,11 @@ print_option "🔧 Option 6: Docker Environment Variables" \
      your-app:latest"
 
 echo -e "${YELLOW}Security Best Practices:${NC}"
-echo "✅ All credential files are in .gitignore"
-echo "✅ Use dedicated MySQL user (not root) in production"
-echo "✅ Use environment variables in production"
-echo "✅ Never commit passwords to version control"
-echo "✅ Use secrets management in cloud environments"
+echo "All credential files are in .gitignore"
+echo "Use dedicated MySQL user (not root) in production"
+echo "Use environment variables in production"
+echo "Never commit passwords to version control"
+echo "Use secrets management in cloud environments"
 echo
 
 echo "For quick setup, we recommend Option 1 (.env file approach)"
